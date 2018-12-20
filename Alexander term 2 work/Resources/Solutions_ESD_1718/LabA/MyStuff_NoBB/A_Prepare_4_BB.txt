@@ -1,0 +1,5 @@
+- remove all the separate files from the A1 folder
+- remove folder A1 from MDK-ARM folder
+- remove A1.ioc from the root folder
+- remove Solution4superloop.txt from the root folder
+- Archive to .zip
