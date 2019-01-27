@@ -29,6 +29,10 @@ long connection_interval = 10000;
 int lights_pin = 7;
 int heat_pin = 6;
 
+const int lcd_timer = 3000;
+int lcd_previous_time = 0;
+int lcd_current_time = millis();
+
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
@@ -48,22 +52,21 @@ void setup() {
   client.setServer(server, port);
   client.setCallback(callback);
 
-  /*if (Ethernet.begin(mac) == 0)
+  if (Ethernet.begin(mac) == 0)
   {
     Serial.println("failed to configure ethernet using DHCP");
     Ethernet.begin(mac, ip);
-  }*/
+  }
 
   delay(1500);
-
-  //Serial.print("mqtt client is at: ");
-  //Serial.println(Ethernet.localIP());
   lcd.clear();
+  Serial.print("mqtt client is at: ");
+  Serial.println(Ethernet.localIP());
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  /*if(!client.connected())
+  if(!client.connected())
   {
     reconnect();
   }
@@ -79,19 +82,22 @@ void loop() {
       send_temp();
       send_light();
     }
-  }*/
+  }
   auto_lights();
   auto_heating();
-  int current_light = analogRead(A0);
-  int current_temp_sensor = analogRead(A1);
-  float current_temp = ((current_temp_sensor*5)/1023.0)*100.0;
-  lcd.setCursor(0,0);
-  lcd.print("Light: ");
-  lcd.print(current_light);
-  lcd.setCursor(0,1);
-  lcd.print("Temp: ");
-  lcd.print(current_temp);
-  delay(1000);
+  if((lcd_current_time - lcd_previous_time) > lcd_timer)
+  {
+    int current_light = analogRead(A0);
+    int current_temp_sensor = analogRead(A1);
+    float current_temp = ((current_temp_sensor*5)/1023.0)*100.0;
+    lcd.setCursor(0,0);
+    lcd.print("Light: ");
+    lcd.print(current_light);
+    lcd.setCursor(0,1);
+    lcd.print("Temp: ");
+    lcd.print(current_temp);
+    lcd_previous_time = lcd_current_time;
+  }
 }
 
 void callback(char* topic, byte* payload, unsigned int length)
@@ -159,10 +165,14 @@ void send_temp()
 {
   if(client.connected())
   {
-    float temp = analogRead(A0);
-    temp = temp*5/1023;
-    char temp_level[5];
-    sprintf(temp_level, "%d", temp);
+    int temp = analogRead(A1);
+    float tempCel = temp*5;
+    tempCel = tempCel / 1023;
+    tempCel = tempCel * 100;
+    Serial.println(tempCel);
+    char temp_level[10];
+    dtostrf(tempCel, 3, 2, temp_level);
+    Serial.println(temp_level);
     client.publish("matthew_d_king/f/temp-sense", temp_level);
   }
 }
