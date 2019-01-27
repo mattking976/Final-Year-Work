@@ -4,8 +4,6 @@
 #include <Ethernet2.h>
 #include <PubSubClient.h>
 
-LiquidCrystal lcd(12,11,5,4,3,2);
-
 //mac address
 byte mac[] = {0x90, 0xA2, 0xDA, 0x11, 0x3B, 0xAD};
 
@@ -23,6 +21,8 @@ const long port = 1883;
 EthernetClient ethernet_client;
 PubSubClient  client(ethernet_client);
 
+LiquidCrystal lcd(12,11,5,4,3,2);
+
 long previous_time = 0;
 long connection_interval = 10000;
 
@@ -35,6 +35,7 @@ void setup() {
   Serial.println("starting mqtt client on arduino...");
 
   lcd.begin(16,2);
+  lcd.clear();
   lcd.print("Starting System");
   
   //pin setup  
@@ -47,21 +48,22 @@ void setup() {
   client.setServer(server, port);
   client.setCallback(callback);
 
-  if (Ethernet.begin(mac) == 0)
+  /*if (Ethernet.begin(mac) == 0)
   {
     Serial.println("failed to configure ethernet using DHCP");
     Ethernet.begin(mac, ip);
-  }
+  }*/
 
   delay(1500);
 
-  Serial.print("mqtt client is at: ");
-  Serial.println(Ethernet.localIP());
+  //Serial.print("mqtt client is at: ");
+  //Serial.println(Ethernet.localIP());
+  lcd.clear();
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  if(!client.connected())
+  /*if(!client.connected())
   {
     reconnect();
   }
@@ -77,8 +79,19 @@ void loop() {
       send_temp();
       send_light();
     }
-  }
+  }*/
   auto_lights();
+  auto_heating();
+  int current_light = analogRead(A0);
+  int current_temp_sensor = analogRead(A1);
+  float current_temp = ((current_temp_sensor*5)/1023.0)*100.0;
+  lcd.setCursor(0,0);
+  lcd.print("Light: ");
+  lcd.print(current_light);
+  lcd.setCursor(0,1);
+  lcd.print("Temp: ");
+  lcd.print(current_temp);
+  delay(1000);
 }
 
 void callback(char* topic, byte* payload, unsigned int length)
@@ -119,6 +132,7 @@ void reconnect()
   }
 }
 
+//custom header function that sends the current uptime of the device
 void send_message()
 {
   char time_str[40];
@@ -126,6 +140,8 @@ void send_message()
   client.publish("matthew_d_king/f/status-messages", time_str);
 }
 
+//custom function that sends the light value to the
+//adafruit.io dashboard with the light guage feed on it
 void send_light()
 {
   if(client.connected())
@@ -137,23 +153,28 @@ void send_light()
   }
 }
 
+//custom function that sends the temperature value to the
+//adafruit.io dashboard with the temperature graph feed on it
 void send_temp()
 {
   if(client.connected())
   {
-    int temp = analogRead(A0);
-    temp = (5*temp*100)/1024;
+    float temp = analogRead(A0);
+    temp = temp*5/1023;
     char temp_level[5];
-    sprintf(temp_level, "%i", temp);
+    sprintf(temp_level, "%d", temp);
     client.publish("matthew_d_king/f/temp-sense", temp_level);
   }
 }
 
+//custom fuction for turning on the heating
+//if the temperature level is below a certain value the heating comes on
+//else the heating remains off
 void auto_heating()
 {
-  float current_heat_level = analogRead(A1);
-  current_heat_level = (3.3*current_heat_level*100)/1024;
-  if(current_heat_level < 18)
+  int current_temp_sensor = analogRead(A1);
+  float current_temp = ((current_temp_sensor*5)/1023.0)*100.0;
+  if(current_temp < 18)
   {
     //turn on the heating on
     digitalWrite(heat_pin, HIGH);
@@ -165,6 +186,9 @@ void auto_heating()
   }
 }
 
+//custom fuction for turning on the lights
+//if the light level is below a certain value the lights come on
+//else the lights remain off
 void auto_lights()
 {
   int current_light_level = analogRead(A0);
@@ -178,5 +202,28 @@ void auto_lights()
     //turn the lights off
     digitalWrite(lights_pin, LOW);
   }
+}
+
+//custom function for writing information to the lcd
+void LCD_print_int(int cursor_Pos, int line_Pos, float text_Output)
+{
+  //screen clearing
+  lcd.setCursor(cursor_Pos, line_Pos);
+  lcd.print("                ");
+  
+  //set new content
+  lcd.setCursor(cursor_Pos, line_Pos);
+  lcd.print(text_Output);
+}
+//custom function for writing information to the lcd
+void LCD_print_String(int cursor_Pos, int line_Pos, String text_Output)
+{
+  //screen clearing
+  lcd.setCursor(cursor_Pos, line_Pos);
+  lcd.print("                ");
+  
+  //set new content
+  lcd.setCursor(cursor_Pos, line_Pos);
+  lcd.print(text_Output);
 }
 
