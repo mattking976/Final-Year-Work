@@ -33,10 +33,8 @@ long connection_interval = 10000;
 const int lights_pin = 7;
 const int heat_pin = 6;
 
-//timer for the lcd update
-const int lcd_timer = 3000;
-int lcd_previous_time = 0;
-int lcd_current_time = millis();
+//temp variable for global temperature 
+float tempCel;
 
 void setup() {
   // put your setup code here, to run once:
@@ -100,32 +98,12 @@ void loop() {
       */
       previous_time = current_time;
       send_message();
-      send_temp();
-      send_light();
+      send_Data();
     }
   }
   //check the automated heating and lighting condtions to see if either need activating
   auto_lights();
-  auto_heating();
-
-  //check to see if the lcd timer has passed
-  if((lcd_current_time - lcd_previous_time) > lcd_timer)
-  {
-    //if so send the data to the lcd and print it there for the user to see
-    int current_light = analogRead(A0);
-    int current_temp_sensor = analogRead(A1);
-    float current_temp = ((current_temp_sensor*5)/1023.0)*100.0;
-    lcd.setCursor(0,0);
-    lcd.print("Light: ");
-    lcd.setCursor(7,0);
-    lcd.print(current_light);
-    lcd.setCursor(0,1);
-    lcd.print("Temp: ");
-    lcd.setCursor(6,1);
-    lcd.print(current_temp);
-    //reset the lcd timer
-    lcd_previous_time = lcd_current_time;
-  }
+  auto_heating(tempCel);
 }
 
 void callback(char* topic, byte* payload, unsigned int length)
@@ -176,43 +154,44 @@ void send_message()
 
 //custom function that sends the light value to the
 //adafruit.io dashboard with the light guage feed on it
-void send_light()
-{
-  if(client.connected())
-  {
-    int light = analogRead(A0);
-    char light_level[5];
-    sprintf(light_level, "%i", light);
-    client.publish("matthew_d_king/f/ldr-guage", light_level);
-  }
-}
-
 //custom function that sends the temperature value to the
 //adafruit.io dashboard with the temperature graph feed on it
-void send_temp()
+void send_Data()
 {
-  if(client.connected())
+    if(client.connected())
   {
+    int light = analogRead(A0);
     int temp = analogRead(A1);
-    float tempCel = temp*5;
-    tempCel = tempCel / 1023;
-    tempCel = tempCel * 100;
+    tempCel = ((temp*5) / 1023.0) * 100.0;
     Serial.println(tempCel);
     char temp_level[10];
     dtostrf(tempCel, 3, 2, temp_level);
     Serial.println(temp_level);
     client.publish("matthew_d_king/f/temp-sense", temp_level);
+    
+    //sending the light data
+    char light_level[5];
+    sprintf(light_level, "%i", light);
+    client.publish("matthew_d_king/f/ldr-guage", light_level);
+    
+    //updating the lcd
+    lcd.setCursor(0,0);
+    lcd.print("Light: ");
+    lcd.setCursor(7,0);
+    lcd.print(light_level);
+    lcd.setCursor(0,1);
+    lcd.print("Temp: ");
+    lcd.setCursor(6,1);
+    lcd.print(temp_level);
   }
 }
 
 //custom fuction for turning on the heating
 //if the temperature level is below a certain value the heating comes on
 //else the heating remains off
-void auto_heating()
+void auto_heating(float temp)
 {
-  int current_temp_sensor = analogRead(A1);
-  float current_temp = ((current_temp_sensor*5)/1023.0)*100.0;
-  if(current_temp < 18)
+  if(temp < 18)
   {
     //turn on the heating on
     digitalWrite(heat_pin, HIGH);
@@ -230,7 +209,7 @@ void auto_heating()
 void auto_lights()
 {
   int current_light_level = analogRead(A0);
-  if(current_light_level < 100)
+  if(current_light_level < 400)
   {
     //turn on the lights
     digitalWrite(lights_pin, HIGH);
