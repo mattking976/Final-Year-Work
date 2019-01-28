@@ -18,17 +18,22 @@ const char apikey[] = "fb2cd923a9464c90b6b7647fa04fabf1";
 const char server[] = "io.adafruit.com";
 const long port = 1883;
 
+//ethernet and pubsubsclient
 EthernetClient ethernet_client;
 PubSubClient  client(ethernet_client);
 
+//lcd display setup
 LiquidCrystal lcd(A4,A5,5,4,3,2);
 
+//connection timer variables
 long previous_time = 0;
 long connection_interval = 10000;
 
-int lights_pin = 7;
-int heat_pin = 6;
+//pin variables for the leds
+const int lights_pin = 7;
+const int heat_pin = 6;
 
+//timer for the lcd update
 const int lcd_timer = 3000;
 int lcd_previous_time = 0;
 int lcd_current_time = millis();
@@ -38,6 +43,7 @@ void setup() {
   Serial.begin(9600);
   Serial.println("starting mqtt client on arduino...");
 
+  //lcd setup and initial message
   lcd.begin(16,2);
   lcd.clear();
   lcd.print("Starting System");
@@ -48,17 +54,22 @@ void setup() {
 
   digitalWrite(lights_pin, LOW);
   digitalWrite(heat_pin, LOW);
-  
+
+  //setting up the pubsubserver and callback
   client.setServer(server, port);
   client.setCallback(callback);
 
+  //checking to make sure that ethernet has sorted its self out
   if (Ethernet.begin(mac) == 0)
   {
     Serial.println("failed to configure ethernet using DHCP");
     Ethernet.begin(mac, ip);
   }
 
+  //waiting for the ethernet to connect properly
   delay(1500);
+  
+  //clearing the lcd and sending local ip data to serial console
   lcd.clear();
   Serial.print("mqtt client is at: ");
   Serial.println(Ethernet.localIP());
@@ -66,27 +77,41 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
+  //check to make sure the client is connected
   if(!client.connected())
   {
+    //if not connected then attempt to reconnect
     reconnect();
   }
   else
   {
+    //keeping up to date with the clients subscriptions
     client.loop();
 
+    //checking to see if the connection interval has passed
     unsigned long current_time = millis();
     if (current_time - previous_time > connection_interval)
     {
+      /*
+       * if the time has passed set the previous time to the current time
+       * to reset the timer send the basic message to the adafruit console
+       * send the temperature data to adafruit
+       * send the light data to adafruit
+      */
       previous_time = current_time;
       send_message();
       send_temp();
       send_light();
     }
   }
+  //check the automated heating and lighting condtions to see if either need activating
   auto_lights();
   auto_heating();
+
+  //check to see if the lcd timer has passed
   if((lcd_current_time - lcd_previous_time) > lcd_timer)
   {
+    //if so send the data to the lcd and print it there for the user to see
     int current_light = analogRead(A0);
     int current_temp_sensor = analogRead(A1);
     float current_temp = ((current_temp_sensor*5)/1023.0)*100.0;
@@ -98,6 +123,7 @@ void loop() {
     lcd.print("Temp: ");
     lcd.setCursor(6,1);
     lcd.print(current_temp);
+    //reset the lcd timer
     lcd_previous_time = lcd_current_time;
   }
 }
@@ -215,27 +241,3 @@ void auto_lights()
     digitalWrite(lights_pin, LOW);
   }
 }
-
-//custom function for writing information to the lcd
-void LCD_print_int(int cursor_Pos, int line_Pos, float text_Output)
-{
-  //screen clearing
-  lcd.setCursor(cursor_Pos, line_Pos);
-  lcd.print("                ");
-  
-  //set new content
-  lcd.setCursor(cursor_Pos, line_Pos);
-  lcd.print(text_Output);
-}
-//custom function for writing information to the lcd
-void LCD_print_String(int cursor_Pos, int line_Pos, String text_Output)
-{
-  //screen clearing
-  lcd.setCursor(cursor_Pos, line_Pos);
-  lcd.print("                ");
-  
-  //set new content
-  lcd.setCursor(cursor_Pos, line_Pos);
-  lcd.print(text_Output);
-}
-
