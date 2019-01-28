@@ -21,7 +21,7 @@ const long port = 1883;
 EthernetClient ethernet_client;
 PubSubClient  client(ethernet_client);
 
-LiquidCrystal lcd(12,11,5,4,3,2);
+LiquidCrystal lcd(A4,A5,5,4,3,2);
 
 long previous_time = 0;
 long connection_interval = 10000;
@@ -92,9 +92,11 @@ void loop() {
     float current_temp = ((current_temp_sensor*5)/1023.0)*100.0;
     lcd.setCursor(0,0);
     lcd.print("Light: ");
+    lcd.setCursor(7,0);
     lcd.print(current_light);
     lcd.setCursor(0,1);
     lcd.print("Temp: ");
+    lcd.setCursor(6,1);
     lcd.print(current_temp);
     lcd_previous_time = lcd_current_time;
   }
