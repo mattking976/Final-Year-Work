@@ -48,7 +48,9 @@ void setup() {
   
   //pin setup  
   pinMode(A0, INPUT);
+  pinMode(A1, INPUT);
   pinMode(lights_pin, OUTPUT);
+  pinMode(heat_pin, OUTPUT);
 
   digitalWrite(lights_pin, LOW);
   digitalWrite(heat_pin, LOW);
