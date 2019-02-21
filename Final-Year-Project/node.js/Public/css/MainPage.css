@@ -1,0 +1,31 @@
+body {
+	background-color: lightblue;
+}
+
+h1{
+	color: black;
+	text-align: center;
+	font-family: arial;
+}
+
+p {
+	color: black;
+	font-family: arial;
+}
+
+LiveStream{
+	color: lightblue;
+	text-align: center;
+}
+
+LiveData{
+	align: right;
+}
+
+th{
+	text-align: center;
+}
+
+td{
+	text-align: left;
+}
