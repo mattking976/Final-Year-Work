@@ -1,6 +1,4 @@
-const checkboxLight = document.getElementById("Lights");
-const checkboxHeat = document.getElementById("Heater");
-
+//the code that the button runs when clicked
 function getData()
 {
 	var xhttp = new XMLHttpRequest();
@@ -14,28 +12,28 @@ function getData()
 			document.getElementById("celData").innerHTML = xhttp.responseText;
 		}
 	};
+	
+	
+	
 }
 
-checkboxHeat.addEventListener('change', (event) => {
-	if(event.target.checked)
-	{
-		alert("heater is on");
-		//send heater on
-	}else
-	{
-		alert("heater is off");
-		//send heater off
-	}
-});
+// This function is pointing to localhost for debug. Needs to go to the pi for live
+function getData2()
+{
+    $.ajax({
+        url: 'http://127.0.0.1:8124/',
+        dataType: "jsonp",
+        jsonpCallback: "_brewdata",
+        cache: false,
+        timeout: 5000,
+        success: function(data) {
+            $("#test").html(data);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            alert('error ' + textStatus + " " + errorThrown);
+        }
+    });
+};
 
-checkboxLight.addEventListener('change', (event) => {
-	if(event.target.checked)
-	{
-		alert("Light is on");
-		//send lights on
-	}else
-	{
-		alert("Light is off");
-		//send lights off
-	}
-});
+
+
