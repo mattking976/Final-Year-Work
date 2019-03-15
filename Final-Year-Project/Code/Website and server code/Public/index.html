@@ -2,7 +2,8 @@
 	<head>
 		<!--linking the css to the webpage-->
 		<link rel="stylesheet" href="css/MainPage.css">
-		<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>	</head>
+		<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
+	</head>
 	<!--adding a title to the web page-->
 	<title>Remote Web-based Monitoring of the Brewing Process</title>
 	<body>
@@ -10,29 +11,15 @@
 		<h1>Remote Web-based Monitoring of the Brewing Process</h1>
 		
 		<div id="CameraFeed"><!--creating a div container for easier css and readability-->
-			<!--insert camera feed and live updating stats
-			<iframe id="LiveStream" src="http://10.108.200.109:8081" height="600" width="800" ></iframe>-->
+			<!--insert camera feed and live updating stats-->
+			<iframe id="LiveStream" src="http://10.108.200.109:8081" height="600" width="800" ></iframe>
 		</div>
-		<p id="celData">cel data</p>
-		<button type="button" onclick="getData2()">change text</button>
 		<p>
 			<input id="Lights" type="checkbox">Lighting</input>
 			<input id="Heater" type="checkbox">Heater</input>
+			<p><button type="button" onclick="getData()">Get Data</button></p>
 		</p>
 		<div id="LiveData">
-			<table id="BrewData">
-				<!--setup table code-->
-				<tr>
-					<th>Celcius Data</th>
-					<th>Farenheit Data</th>
-				</tr>
-				<tr>
-					<td>Cell 1</td>
-					<td>Cell 2</td>
-				</tr>
-			</table>
-		</div>
-		<div id="test">
 		</div>
 		<script type="text/javascript" src="js/MainPageScript.js"></script>
 	</body>
