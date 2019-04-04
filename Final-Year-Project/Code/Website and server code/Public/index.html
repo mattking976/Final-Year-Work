@@ -1,26 +1,26 @@
 <html>
-	<head>
-		<!--linking the css to the webpage-->
-		<link rel="stylesheet" href="css/MainPage.css">
-		<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
-	</head>
-	<!--adding a title to the web page-->
-	<title>Remote Web-based Monitoring of the Brewing Process</title>
-	<body>
-		<!--heading of the web page-->
-		<h1>Remote Web-based Monitoring of the Brewing Process</h1>
-		
-		<div id="CameraFeed"><!--creating a div container for easier css and readability-->
-			<!--insert camera feed and live updating stats-->
-			<iframe id="LiveStream" src="http://10.108.200.109:8081" height="600" width="800" ></iframe>
-		</div>
-		<p>
-			<input id="Lights" type="checkbox">Lighting</input>
-			<input id="Heater" type="checkbox">Heater</input>
-			<p><button type="button" onclick="getData()">Get Data</button></p>
-		</p>
-		<div id="LiveData">
-		</div>
-		<script type="text/javascript" src="js/MainPageScript.js"></script>
-	</body>
+        <head>
+                <!--linking the css to the webpage-->
+                <link rel="stylesheet" href="css/MainPage.css">
+                <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
+        </head>
+        <!--adding a title to the web page-->
+        <title>Remote Web-based Monitoring of the Brewing Process</title>
+        <body>
+                <!--heading of the web page-->
+                <h1>Remote Web-based Monitoring of the Brewing Process</h1>
+
+                <div id="CameraFeed"><!--creating a div container for easier css and readability-->
+                        <!--insert camera feed and live updating stats-->
+                        <iframe id="LiveStream" src="http://10.108.200.109:8081" height="600" width="800" ></iframe>
+                </div>
+                <p>
+                        <input id="Lights" type="checkbox">Lighting</input>
+                        <input id="Heater" type="checkbox">Heater</input>
+                        <p><button type="button" onclick="getData()">Get Data</button></p>
+                </p>
+                <div id="LiveData">
+                </div>
+                <script type="text/javascript" src="js/MainPageScript.js"></script>
+        </body>
 </html>

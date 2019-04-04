@@ -1,8 +1,66 @@
 const checkboxLight = document.getElementById("Lights");
 const checkboxHeat = document.getElementById("Heater");
+const heatOff = 'off';
+const heatOn = 'on';
+const lightOff = 'off';
+const lightOn = 'on';
+var currentHeat;
+var currentLight;
 
-// This function is pointing to localhost for debug. Needs to go to the pi for live
-function getData2()
+$(document).ready(function readyFn(){
+        update();
+        getSwitchState();
+        setSwitchState();
+});
+
+checkboxHeat.addEventListener('change', (event) => {
+        if(event.target.checked)
+        {
+                currentHeat = heatOn;
+                setSwitchStateP(currentLight, heatOn);
+                //send heater on
+        }else
+        {
+                currentHeat = heatOff;
+                setSwitchStateP(currentLight, heatOff);
+                //send heater off
+        }
+});
+
+checkboxLight.addEventListener('change', (event) => {
+        if(event.target.checked)
+        {
+                currentLight = lightOn;
+                setSwitchStateP(lightOn, currentHeat);
+                //send lights on
+        }else
+        {
+                currentLight = lightOff;
+                setSwitchStateP(lightOff, currentHeat);
+                //send lights off
+        }
+});
+
+function update()
+{
+        $.ajax({
+        url: 'http://10.108.200.109:8124/',
+        dataType: "jsonp",
+        jsonpCallback: "_brewdata",
+        cache: false,
+        timeout: 5000,
+        success: function(data) {
+            $("#LiveData").html(data);
+            window.setTimeout(update, 10000);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            alert('error ' + textStatus + " " + errorThrown);
+        }
+    });
+
+}
+
+function getData()
 {
     $.ajax({
         url: 'http://10.108.200.109:8124/',
@@ -19,27 +77,53 @@ function getData2()
     });
 }
 
+function getSwitchState()
+{
+    $.ajax({
+        url: 'http://10.108.200.109:8124/?light=off&heat=off',
+        dataType: "jsonp",
+        jsonpCallback: "_getSwitchState",
+        cache: false,
+        timeout: 5000,
+        success: function(data) {
+            $("#test").html(data);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            alert('error ' + textStatus + " " + errorThrown);
+        }
+    });
+};
 
-checkboxHeat.addEventListener('change', (event) => {
-	if(event.target.checked)
-	{
-		alert("heater is on");
-		//send heater on
-	}else
-	{
-		alert("heater is off");
-		//send heater off
-	}
-});
+function setSwitchState()
+{
+    $.ajax({
+        url: 'http://10.108.200.109:8124/?light=off&heat=off',
+        dataType: "jsonp",
+        jsonpCallback: "_setSwitchState",
+        cache: false,
+        timeout: 5000,
+        success: function(data) {
+            $("#test").html(data);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            alert('error ' + textStatus + " " + errorThrown);
+        }
+    });
+};
 
-checkboxLight.addEventListener('change', (event) => {
-	if(event.target.checked)
-	{
-		alert("Light is on");
-		//send lights on
-	}else
-	{
-		alert("Light is off");
-		//send lights off
-	}
-});
+function setSwitchStateP(lightState, heatState)
+{
+    $.ajax({
+        url: 'http://10.108.200.109:8124/?light='+ lightState +'&heat=' + heatState,
+        dataType: "jsonp",
+        jsonpCallback: "_setSwitchState",
+        cache: false,
+        timeout: 5000,
+        success: function(data) {
+            $("#test").html(data);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            alert('error ' + textStatus + " " + errorThrown);
+        }
+    });
+};
