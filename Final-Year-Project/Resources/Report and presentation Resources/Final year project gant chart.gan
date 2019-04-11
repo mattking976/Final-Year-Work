@@ -4,7 +4,7 @@
         <field id="tpd3" name="Name" width="167" order="0"/>
         <field id="tpd4" name="Begin date" width="65" order="1"/>
         <field id="tpd5" name="End date" width="64" order="2"/>
-        <timeline><![CDATA[32,41,2,28,19,37,20,4,0,5]]></timeline>
+        <timeline><![CDATA[5,19,0,28,41,4,2,37,20,32]]></timeline>
     </view>
     <view id="resource-table">
         <field id="0" name="Name" width="210" order="0"/>
@@ -106,7 +106,7 @@
         <task id="11" name="Take notes for dissertation" color="#f4f4f4" meeting="false" start="2018-10-15" duration="97" complete="0" thirdDate="2018-09-10" thirdDate-constraint="0" expand="true">
             <depend id="16" type="2" difference="0" hardness="Strong"/>
         </task>
-        <task id="16" name="Write disseration" color="#f4f4f4" meeting="false" start="2019-03-04" duration="40" complete="0" thirdDate="2018-10-01" thirdDate-constraint="0" expand="true"/>
+        <task id="16" name="Write disseration" color="#f4f4f4" meeting="false" start="2019-03-04" duration="29" complete="0" thirdDate="2018-10-01" thirdDate-constraint="0" expand="true"/>
     </tasks>
     <resources/>
     <allocations/>
