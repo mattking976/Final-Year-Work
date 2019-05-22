@@ -2,9 +2,9 @@
 Name='Fuzzy_Car'
 Type='mamdani'
 Version=2.0
-NumInputs=2
-NumOutputs=1
-NumRules=9
+NumInputs=4
+NumOutputs=2
+NumRules=14
 AndMethod='min'
 OrMethod='max'
 ImpMethod='min'
@@ -13,11 +13,11 @@ DefuzzMethod='centroid'
 
 [Input1]
 Name='SpeedLimit'
-Range=[0 10]
+Range=[-5 5]
 NumMFs=3
-MF1='Below':'gaussmf',[1.5 0]
-MF2='around':'gaussmf',[1.5 5]
-MF3='above':'gaussmf',[1.5 10]
+MF1='Below':'gaussmf',[1.5 -5]
+MF2='around':'gaussmf',[1.5 0]
+MF3='above':'gaussmf',[1.5 5]
 
 [Input2]
 Name='distance_to_car_in_front'
@@ -27,21 +27,50 @@ MF1='Close':'gaussmf',[2.123 -5.551e-17]
 MF2='not_too_far':'gaussmf',[2.123 5]
 MF3='distant':'gaussmf',[2.123 10]
 
+[Input3]
+Name='Left_Side_Line'
+Range=[0 1]
+NumMFs=3
+MF1='Too_Close':'gaussmf',[0.1699 6.939e-18]
+MF2='Good_Distance':'gaussmf',[0.1699 0.5]
+MF3='Too_far':'gaussmf',[0.1699 1]
+
+[Input4]
+Name='right_Side_Line'
+Range=[0 1]
+NumMFs=3
+MF1='Too_Close':'gaussmf',[0.1699 6.939e-18]
+MF2='Good_Distance':'gaussmf',[0.1699 0.5]
+MF3='Too_Far':'gauss2mf',[0.1359 0.96 0.1359 1.04]
+
 [Output1]
-Name='tip'
+Name='Speed'
 Range=[0 30]
 NumMFs=3
 MF1='Slow_Down':'trimf',[0 5 10]
 MF2='Stay_at_current_speed':'trimf',[10 15 20]
 MF3='Accelerate':'trimf',[20 25 30]
 
+[Output2]
+Name='InLane'
+Range=[0 1]
+NumMFs=3
+MF1='Steer_RIght':'gaussmf',[0.1698 0]
+MF2='Stay_Current_course':'gaussmf',[0.1699 0.5]
+MF3='Steer_Left':'gaussmf',[0.2592 0.9831]
+
 [Rules]
-1 1, 1 (1) : 1
-1 2, 2 (1) : 1
-1 3, 3 (1) : 1
-2 1, 1 (1) : 1
-2 2, 2 (1) : 1
-2 3, 2 (1) : 1
-3 1, 1 (1) : 1
-3 2, 1 (1) : 1
-3 3, 1 (1) : 1
+1 1 0 0, 1 0 (1) : 1
+1 2 0 0, 2 0 (1) : 1
+1 3 0 0, 3 0 (1) : 1
+2 1 0 0, 1 0 (1) : 1
+2 2 0 0, 2 0 (1) : 1
+2 3 0 0, 2 0 (1) : 1
+3 1 0 0, 1 0 (1) : 1
+3 2 0 0, 1 0 (1) : 1
+3 3 0 0, 1 0 (1) : 1
+0 0 1 3, 0 1 (1) : 1
+0 0 2 2, 0 2 (1) : 1
+0 0 3 1, 0 3 (1) : 1
+0 0 1 1, 0 2 (1) : 1
+0 0 3 3, 0 2 (1) : 1
